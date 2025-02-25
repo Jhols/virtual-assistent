@@ -1,17 +1,44 @@
 import speech_recognition as sr
+import re
 
-mic = sr.Recognizer()
+name = ''
 
-with sr.Microphone() as source:
-    mic.adjust_for_ambient_noise(source)
+while(True):
+    mic = sr.Recognizer()
 
-    print("Let's start! Speak something...")
+    with sr.Microphone() as source:
+        mic.adjust_for_ambient_noise(source)
 
-    audio = mic.listen(source)
+        print("Let's start! Speak something...")
 
-    try:
-        phrase = mic.recognize_google(audio, language='pt-BR')
-        print("You said: " + phrase)
+        audio = mic.listen(source)
 
-    except sr.UnknownValueError:
-        print("oops... something goes wrong.")
+        try:
+            phrase = mic.recognize_google(audio, language='en-US')
+
+            print("You said: " + phrase)
+
+            if (re.search(r'\b' + "bye-bye" + r'\b', format(phrase))):
+                print('See you soon!')
+                break
+
+            elif (re.search(r'\b' + "help" + r'\b', format(phrase))):
+                print('Something related to helping.')
+
+            elif (re.search(r'\b' + "my name is" + r'\b', format(phrase))):
+                t = re.search("my name is (.*)", format(phrase))
+                if t:
+                    name = t.group(1)
+                    print("Your name is " + name)
+
+            elif (re.search(r'\b' + "what is my name" + r'\b', format(phrase))):
+                if name:
+                    print("Your name is " + name)
+                else:
+                    print("I don't know your name. Please, tell me.")
+
+            elif (re.search(r'\b' + "thank you" + r'\b', format(phrase))):
+                print("You're welcome!")
+
+        except sr.UnknownValueError:
+            print("oops... something goes wrong.")
