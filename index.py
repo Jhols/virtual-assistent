@@ -14,7 +14,7 @@ while(True):
 
     with sr.Microphone() as source:
         engine = pyttsx3.init()
-        
+
         # engine.setProperty('voice', 'com.apple.speech.synthesis.voice.luciana') # for portuguese
 
         mic.adjust_for_ambient_noise(source)
@@ -25,35 +25,38 @@ while(True):
 
         try:
             phrase = mic.recognize_google(audio, language='en-US')
-
             print("You said: " + phrase)
 
-            if (re.search(r'\b' + "bye-bye" + r'\b', format(phrase))):
+            # Goodbye command
+            if re.search(r'\b(bye|goodbye|see you|bye-bye|take care)\b', phrase, re.IGNORECASE):
                 engineAnswer('See you soon!')
                 break
 
-            elif (re.search(r'\b' + "hello" + r'\b', format(phrase))):
+            # Greeting command
+            elif re.search(r'\b(hello|hi|hey|hi there)\b', phrase, re.IGNORECASE):
                 engineAnswer('Hi there!')
 
-            elif (re.search(r'\b' + "help" + r'\b', format(phrase))):
-                engineAnswer('Something related to helping.')
+            # Help command
+            elif re.search(r'\b(help|assist|need help)\b', phrase, re.IGNORECASE):
+                engineAnswer('How can I help you today?')
 
-            elif (re.search(r'\b' + "my name is" + r'\b', format(phrase))):
-                t = re.search("my name is (.*)", format(phrase))
+            # Save user's name
+            elif re.search(r'\b(my name is|i am|call me)\b', phrase, re.IGNORECASE):
+                t = re.search(r"(my name is|i am|call me)\s+(.*)", phrase, re.IGNORECASE)
                 if t:
-                    name = t.group(1)
-                    engineAnswer("Your name is " + name)
+                    name = t.group(2)
+                    engineAnswer(f"Your name is {name}")
 
-
-            elif (re.search(r'\b' + "what is my name" + r'\b', format(phrase))):
+            # Ask user's name
+            elif re.search(r'\b(what is my name|what’s my name|tell me my name)\b', phrase, re.IGNORECASE):
                 if name:
-                   engineAnswer("Your name is " + name)
-
+                    engineAnswer(f"Your name is {name}")
                 else:
                     engineAnswer("I don't know your name. Please, tell me.")
 
-            elif (re.search(r'\b' + "thank you" + r'\b', format(phrase))):
+            # Thank you command
+            elif re.search(r'\b(thank you|thanks|thanks a lot|thank you very much)\b', phrase, re.IGNORECASE):
                 engineAnswer("You're welcome!")
 
         except sr.UnknownValueError:
-            print("oops... something goes wrong.")
+            print("Oops... something went wrong.")
